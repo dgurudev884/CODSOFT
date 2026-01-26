@@ -1,0 +1,101 @@
+#include <iostream>
+#include <fstream>
+#include<string>
+#include<sstream>
+using namespace std;
+void add(fstream &file){
+	string task,status;
+			int tno;
+			cout<<"Enter the number of tasks:";
+			cin>>tno;
+			for(int i=0;i<tno;i++){
+			cout<<"Enter the task no "<<i+1<<" : ";
+			cin>>task;
+			cout<<"Enter the task's status";
+			cin>>status;
+			file<<task<<","<<status<<"\n";}
+			file.flush();}
+int main(){
+	while(true){
+		cout<<"Enter 1 for adding tasks , 2 to view all tasks, 3 to delete tasks , 4 to update , 5 to stop ";
+		int ch;
+		cin>>ch;
+		if (!(ch==1 || ch==2||ch==3||ch==4||ch==5)){
+			cout<<"Invalid choice"<<endl;
+			continue;}
+		if (ch==1){
+				fstream file("database.txt",ios::in|ios::out| ios::app);
+
+			add(file);
+			}
+		else if (ch==2){
+			cout<<"Your tasks"<<endl;
+			string line;
+			ifstream fpe("database.txt");
+			while(getline(fpe,line)){
+				stringstream fp(line);
+				string task,status;
+				getline(fp,task,',');
+				getline(fp,status);
+				cout<<"Task : "<<task<<"\t\t\t";
+				cout<<"Status: "<<status<<endl;}
+				fpe.close();}
+		else if(ch==3){
+			fstream file("database.txt");
+			int tno;
+			cout<<"Enter the no of tasks to be deleted";
+			cin>>tno;
+			string delete_tasks[tno];
+			for(int i=0;i<tno;i++){
+				cout<<"Enter the task no "<<i+1<<" to be deleted ";
+				cin>>delete_tasks[i];}
+			for(int i=0;i<tno;i++){
+				file.clear();
+				file.seekg(0,ios::beg);
+				string line;
+				fstream fil("new.txt",ios::out);
+				while(getline(file,line)){
+					string full=line;
+					stringstream fp(line);
+					string task;
+					getline(fp,task,',');
+					if (task==delete_tasks[i]){
+						continue;}
+					else{
+						fil<<full<<"\n";}}
+						fil.close();
+						file.close();
+						remove("database.txt");
+						rename("new.txt","database.txt");}}
+			else if(ch==4){
+				fstream file("database.txt",ios::in|ios::out);
+				fstream fp("new.txt",ios::out);
+				string task,status;
+				cout<<"Enter the task to be updated";
+				cin>>task;
+				cout<<"Enter the status";
+				cin>>status;
+				string line;
+				int found=0;
+				while(getline(file,line)){
+					stringstream s(line);
+					string k;
+					getline(s,k,',');
+					string j;
+					getline(s,j);
+					if (k==task){
+						found=1;
+						fp<<k<<","<<status<<"\n";
+					}
+					else{
+						fp<<k<<","<<j<<"\n";}}
+						if(found==0){
+							cout<<"The given task is not found in the to do list"<<endl;
+						}
+						fp.flush();
+				fp.close();
+				file.close();
+				remove("database.txt");
+				rename("new.txt","database.txt");}
+		else{
+			break;}}}
