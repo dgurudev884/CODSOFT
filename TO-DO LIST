@@ -2,17 +2,19 @@
 #include <fstream>
 #include<string>
 #include<sstream>
+#include<vector>
 using namespace std;
 void add(fstream &file){
 	string task,status;
 			int tno;
 			cout<<"Enter the number of tasks:";
 			cin>>tno;
+			cin.ignore();
 			for(int i=0;i<tno;i++){
 			cout<<"Enter the task no "<<i+1<<" : ";
-			cin>>task;
-			cout<<"Enter the task's status";
-			cin>>status;
+			getline(cin,task);
+			cout<<"Enter the task's status:";
+			getline(cin,status);
 			file<<task<<","<<status<<"\n";}
 			file.flush();}
 int main(){
@@ -25,6 +27,10 @@ int main(){
 			continue;}
 		if (ch==1){
 				fstream file("database.txt",ios::in|ios::out| ios::app);
+				if (!file){
+					cerr<<"Error in opening the file"<<endl;
+					return 1;
+				}
 
 			add(file);
 			}
@@ -37,19 +43,26 @@ int main(){
 				string task,status;
 				getline(fp,task,',');
 				getline(fp,status);
-				cout<<"Task : "<<task<<"\t\t\t";
-				cout<<"Status: "<<status<<endl;}
+				cout<<"-------------------------------------------------------------"<<endl;
+				cout<<"TASK : "<<task<<endl;
+				cout<<"STATUS: "<<status<<endl;
+				cout<<"--------------------------------------------------------------"<<endl;
+				}
 				fpe.close();}
 		else if(ch==3){
 			fstream file("database.txt");
 			int tno;
-			cout<<"Enter the no of tasks to be deleted";
+			cout<<"Enter the no of tasks to be deleted:";
 			cin>>tno;
-			string delete_tasks[tno];
+			 vector <string> delete_tasks;
+			cin.ignore();
+
 			for(int i=0;i<tno;i++){
+				
 				cout<<"Enter the task no "<<i+1<<" to be deleted ";
-				cin>>delete_tasks[i];}
-			for(int i=0;i<tno;i++){
+				string delt;
+				getline(cin,delt);
+				delete_tasks.push_back(delt);}
 				file.clear();
 				file.seekg(0,ios::beg);
 				string line;
@@ -59,21 +72,24 @@ int main(){
 					stringstream fp(line);
 					string task;
 					getline(fp,task,',');
+					int key=0;
+					for (int i=0;i<tno;i++){
 					if (task==delete_tasks[i]){
-						continue;}
-					else{
+						key=1;
+						break;}}
+					if(key==0){
 						fil<<full<<"\n";}}
 						fil.close();
 						file.close();
 						remove("database.txt");
-						rename("new.txt","database.txt");}}
+						rename("new.txt","database.txt");}
 			else if(ch==4){
 				fstream file("database.txt",ios::in|ios::out);
 				fstream fp("new.txt",ios::out);
 				string task,status;
-				cout<<"Enter the task to be updated";
+				cout<<"Enter the task to be updated:";
 				cin>>task;
-				cout<<"Enter the status";
+				cout<<"Enter the status:";
 				cin>>status;
 				string line;
 				int found=0;
